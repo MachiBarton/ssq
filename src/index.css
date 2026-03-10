@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --color-background: #f6f0e7;
+  --color-foreground: #1f2937;
+  --color-card: #fffaf2;
+  --color-card-foreground: #1f2937;
+  --color-popover: #fffaf2;
+  --color-popover-foreground: #1f2937;
+  --color-primary: #19436b;
+  --color-primary-foreground: #f8fafc;
+  --color-secondary: #efe3d0;
+  --color-secondary-foreground: #344054;
+  --color-muted: #eadfcc;
+  --color-muted-foreground: #5f5b52;
+  --color-accent: #eadfcc;
+  --color-accent-foreground: #1f2937;
+  --color-destructive: #b42318;
+  --color-border: rgba(31, 41, 55, 0.12);
+  --color-input: rgba(31, 41, 55, 0.14);
+  --color-ring: rgba(25, 67, 107, 0.35);
+  --color-redball: #b63a2f;
+  --color-blueball: #285ea8;
+  --radius-sm: 0.45rem;
+  --radius-md: 0.85rem;
+  --radius-lg: 1.2rem;
+  --radius-xl: 1.7rem;
+}
+
+:root {
+  color: var(--color-foreground);
+  background: var(--color-background);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(25, 67, 107, 0.08), transparent 28%),
+    radial-gradient(circle at left 20%, rgba(182, 58, 47, 0.08), transparent 24%),
+    linear-gradient(180deg, #faf4eb 0%, #f5efe6 100%);
+  color: var(--color-foreground);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.paper-grid {
+  background-image:
+    linear-gradient(rgba(31, 41, 55, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 41, 55, 0.03) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.soft-shadow {
+  box-shadow: 0 14px 50px rgba(31, 41, 55, 0.08);
+}
