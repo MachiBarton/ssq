@@ -4,10 +4,10 @@ import { History, RefreshCw } from "lucide-react"
 import { RuleAccordion } from "@/components/rule-accordion"
 import { SelectionPanel } from "@/components/selection-panel"
 import { TicketCard } from "@/components/ticket-card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { DEFAULT_SELECTION, createTicketFromSelection, generateRandomTicket, toggleNumber, validateSelection } from "@/lib/dlt"
 import type { GeneratedTicket, HistoryEntry, SelectionState } from "@/types"
 
@@ -87,37 +87,12 @@ function App() {
     <main className="min-h-screen px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <Card className="overflow-hidden border-border/60 bg-card/95">
-          <CardContent className="grid gap-6 px-6 py-6 md:grid-cols-[1.25fr_0.75fr] md:px-8">
-            <div className="space-y-4">
-              <Badge className="bg-secondary text-secondary-foreground">大乐透自助机选</Badge>
-              <div className="space-y-3">
-                <h1 className="text-3xl font-semibold tracking-tight md:text-5xl">复古报刊风的大乐透选号工具，打开就进入高级机选。</h1>
-                <p className="max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-                  现在只保留纯前端选号能力，不再下载历史开奖、不做号码预测，也不包含任何定时任务。默认模式是高级机选，其余单式、复式、胆拖仍可手动切换。
-                </p>
-              </div>
-            </div>
-            <div className="grid gap-3 rounded-[1.4rem] border border-border bg-secondary/35 p-4 text-sm">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-muted-foreground">当前默认模式</span>
-                <span>高级机选</span>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-muted-foreground">本地保存</span>
-                <span>{savedHistory.length} 条</span>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-muted-foreground">页面能力</span>
-                <span>纯静态前端</span>
-              </div>
-              <p className="rounded-2xl border border-border bg-card/80 p-3 text-sm text-muted-foreground">
-                仅提供自助机选和玩法辅助，不提供历史数据、预测分析或自动同步。
-              </p>
-            </div>
+          <CardContent className="px-6 py-8 md:px-8">
+            <h1 className="text-3xl font-semibold tracking-tight md:text-5xl">大乐透选号工具</h1>
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
+        <div className="grid items-stretch gap-6 xl:grid-cols-[1.08fr_0.92fr]">
           <SelectionPanel
             state={selection}
             validation={validation}
@@ -130,36 +105,41 @@ function App() {
             latestTickets={tickets}
           />
 
-          <div className="space-y-6">
-            <Card>
-              <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
-                <div>
-                  <CardTitle>本次选号结果</CardTitle>
-                  <CardDescription>高级机选默认批量生成，多注结果可直接复制或保存。</CardDescription>
+          <Card className="flex h-full min-h-0 flex-col xl:max-h-[calc(100vh-11rem)]">
+            <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
+              <div>
+                <CardTitle>本次选号结果</CardTitle>
+                <CardDescription>结果过多时在卡片内部滚动，不再撑开页面。</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setTickets([])}>
+                <RefreshCw className="h-4 w-4" />
+                清空
+              </Button>
+            </CardHeader>
+            <CardContent className="min-h-0 flex-1">
+              <ScrollArea className="h-full pr-3 xl:max-h-[calc(100vh-18rem)]">
+                <div className="space-y-3">
+                  {tickets.length ? tickets.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} onCopy={handleCopy} onSave={handleSaveTicket} />) : <p className="text-sm text-muted-foreground">尚未生成号码。</p>}
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setTickets([])}>
-                  <RefreshCw className="h-4 w-4" />
-                  清空
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {tickets.length ? tickets.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} onCopy={handleCopy} onSave={handleSaveTicket} />) : <p className="text-sm text-muted-foreground">尚未生成号码。</p>}
-              </CardContent>
-            </Card>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
 
-            <Card>
-              <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
-                <div>
-                  <CardTitle>玩法与金额规则</CardTitle>
-                  <CardDescription>保留大乐透基础玩法说明和金额计算规则。</CardDescription>
-                </div>
-                <Badge variant="outline">规则</Badge>
-              </CardHeader>
-              <CardContent>
-                <RuleAccordion />
-              </CardContent>
-            </Card>
+        <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
+              <div>
+                <CardTitle>玩法与金额规则</CardTitle>
+                <CardDescription>保留大乐透基础玩法说明和金额计算规则。</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <RuleAccordion />
+            </CardContent>
+          </Card>
 
+          <div>
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="secondary" className="w-full justify-center">
