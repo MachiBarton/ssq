@@ -45,7 +45,7 @@ export function SelectionPanel({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <CardTitle>选号工作台</CardTitle>
-            <CardDescription>默认走机选，但完整保留单式、复式、胆拖和锁号补齐能力。</CardDescription>
+            <CardDescription>默认进入高级机选，仍保留单式、复式、胆拖和锁号补齐能力。</CardDescription>
           </div>
           <Badge variant="secondary">{state.mode === "smart" ? `${state.quickPickCount} 注待生成` : `${cost.betCount} 注`}</Badge>
         </div>

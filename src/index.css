@@ -1,7 +1,8 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap");
 
 @theme {
-  --font-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --font-sans: "Libre Baskerville", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Times New Roman", serif;
   --color-background: #f6f0e7;
   --color-foreground: #1f2937;
   --color-card: #fffaf2;
@@ -54,6 +55,7 @@ body {
     radial-gradient(circle at left 20%, rgba(182, 58, 47, 0.08), transparent 24%),
     linear-gradient(180deg, #faf4eb 0%, #f5efe6 100%);
   color: var(--color-foreground);
+  font-family: var(--font-sans);
 }
 
 button,

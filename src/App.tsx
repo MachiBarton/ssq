@@ -1,50 +1,21 @@
-import { useDeferredValue, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { History, RefreshCw } from "lucide-react"
 
-import { HistoryTable } from "@/components/history-table"
-import { RecommendationPanel } from "@/components/recommendation-panel"
 import { RuleAccordion } from "@/components/rule-accordion"
 import { SelectionPanel } from "@/components/selection-panel"
 import { TicketCard } from "@/components/ticket-card"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { DEFAULT_SELECTION, createTicketFromSelection, generateRandomTicket, toggleNumber, validateSelection } from "@/lib/dlt"
-import { getHistorySummary, searchHistory } from "@/lib/history"
-import { getRecommendationSummary } from "@/lib/recommendation"
-import type { GeneratedTicket, HistoryDataset, HistoryEntry, RecommendationDataset, SelectionState } from "@/types"
+import type { GeneratedTicket, HistoryEntry, SelectionState } from "@/types"
 
 const STORAGE_KEY = "dlt-picked-history"
-const DATA_BASE = import.meta.env.BASE_URL
-const DATA_PREFIX = DATA_BASE.endsWith("/") ? DATA_BASE : `${DATA_BASE}/`
-
-const FALLBACK_HISTORY: HistoryDataset = {
-  syncedAt: null,
-  sourceUrl: "https://www.js-lottery.com/lottery/downLottoData",
-  rows: [],
-  syncError: "尚未加载历史开奖数据。",
-}
-
-const FALLBACK_RECOMMENDATION: RecommendationDataset = {
-  generatedAt: null,
-  issueTarget: "待同步",
-  sampleSize: 0,
-  frontPool: [],
-  backPool: [],
-  suggestedTickets: [],
-  methodSummary: ["尚未加载推荐数据。"],
-  disclaimer: "仅基于历史统计，仅供娱乐，不构成购彩建议。",
-  analysisUnavailable: "尚未加载推荐数据。",
-}
 
 function App() {
   const [selection, setSelection] = useState<SelectionState>(DEFAULT_SELECTION)
   const [tickets, setTickets] = useState<GeneratedTicket[]>([])
-  const [historyDataset, setHistoryDataset] = useState<HistoryDataset>(FALLBACK_HISTORY)
-  const [recommendationDataset, setRecommendationDataset] = useState<RecommendationDataset>(FALLBACK_RECOMMENDATION)
   const [savedHistory, setSavedHistory] = useState<HistoryEntry[]>(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) return []
@@ -55,46 +26,12 @@ function App() {
       return []
     }
   })
-  const [search, setSearch] = useState("")
-  const deferredSearch = useDeferredValue(search)
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(savedHistory.slice(0, 20)))
   }, [savedHistory])
 
-  useEffect(() => {
-    let active = true
-
-    async function loadRuntimeData() {
-      try {
-        const [historyResponse, recommendationResponse] = await Promise.all([
-          fetch(`${DATA_PREFIX}data/lotto-history.json`, { cache: "no-store" }),
-          fetch(`${DATA_PREFIX}data/lotto-recommendation.json`, { cache: "no-store" }),
-        ])
-
-        const nextHistory = historyResponse.ok ? ((await historyResponse.json()) as HistoryDataset) : FALLBACK_HISTORY
-        const nextRecommendation = recommendationResponse.ok ? ((await recommendationResponse.json()) as RecommendationDataset) : FALLBACK_RECOMMENDATION
-
-        if (!active) return
-        setHistoryDataset(nextHistory)
-        setRecommendationDataset(nextRecommendation)
-      } catch {
-        if (!active) return
-        setHistoryDataset(FALLBACK_HISTORY)
-        setRecommendationDataset(FALLBACK_RECOMMENDATION)
-      }
-    }
-
-    void loadRuntimeData()
-
-    return () => {
-      active = false
-    }
-  }, [])
-
   const validation = useMemo(() => validateSelection(selection), [selection])
-
-  const filteredHistory = useMemo(() => searchHistory(historyDataset.rows, deferredSearch), [deferredSearch, historyDataset.rows])
 
   const handleToggleNumber = (group: keyof SelectionState, value: number) => {
     setSelection((current) => {
@@ -150,33 +87,32 @@ function App() {
     <main className="min-h-screen px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <Card className="overflow-hidden border-border/60 bg-card/95">
-          <CardContent className="grid gap-6 px-6 py-6 md:grid-cols-[1.3fr_0.9fr] md:px-8">
+          <CardContent className="grid gap-6 px-6 py-6 md:grid-cols-[1.25fr_0.75fr] md:px-8">
             <div className="space-y-4">
-              <Badge className="bg-secondary text-secondary-foreground">大乐透静态选号站</Badge>
-              <div className="space-y-2">
-                <h1 className="text-3xl font-semibold tracking-tight md:text-5xl">机选、规则、历史开奖与每日统计推荐放在一页里。</h1>
+              <Badge className="bg-secondary text-secondary-foreground">大乐透自助机选</Badge>
+              <div className="space-y-3">
+                <h1 className="text-3xl font-semibold tracking-tight md:text-5xl">复古报刊风的大乐透选号工具，打开就进入高级机选。</h1>
                 <p className="max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-                  页面使用 shadcn/ui 组织交互，开奖号码与推荐结果来自构建产物中的静态 JSON。推荐仅基于历史统计，仅供娱乐。
+                  现在只保留纯前端选号能力，不再下载历史开奖、不做号码预测，也不包含任何定时任务。默认模式是高级机选，其余单式、复式、胆拖仍可手动切换。
                 </p>
               </div>
             </div>
             <div className="grid gap-3 rounded-[1.4rem] border border-border bg-secondary/35 p-4 text-sm">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-muted-foreground">历史同步</span>
-                <span>{historyDataset.syncedAt ? new Date(historyDataset.syncedAt).toLocaleString("zh-CN") : "未同步"}</span>
+                <span className="text-muted-foreground">当前默认模式</span>
+                <span>高级机选</span>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-muted-foreground">推荐分析</span>
-                <span>{recommendationDataset.generatedAt ? new Date(recommendationDataset.generatedAt).toLocaleString("zh-CN") : "未生成"}</span>
+                <span className="text-muted-foreground">本地保存</span>
+                <span>{savedHistory.length} 条</span>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-muted-foreground">历史记录</span>
-                <span>{savedHistory.length} 条本地保存</span>
+                <span className="text-muted-foreground">页面能力</span>
+                <span>纯静态前端</span>
               </div>
-              <Alert variant="destructive" className="bg-transparent">
-                <AlertTitle>重要提示</AlertTitle>
-                <AlertDescription>推荐号码并非预测结果，不构成购彩建议。</AlertDescription>
-              </Alert>
+              <p className="rounded-2xl border border-border bg-card/80 p-3 text-sm text-muted-foreground">
+                仅提供自助机选和玩法辅助，不提供历史数据、预测分析或自动同步。
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -195,13 +131,11 @@ function App() {
           />
 
           <div className="space-y-6">
-            <RecommendationPanel dataset={recommendationDataset} />
-
             <Card>
               <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
                 <div>
                   <CardTitle>本次选号结果</CardTitle>
-                  <CardDescription>单式直接出一注，智能机选可批量生成多注。</CardDescription>
+                  <CardDescription>高级机选默认批量生成，多注结果可直接复制或保存。</CardDescription>
                 </div>
                 <Button variant="outline" size="sm" onClick={() => setTickets([])}>
                   <RefreshCw className="h-4 w-4" />
@@ -212,35 +146,14 @@ function App() {
                 {tickets.length ? tickets.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} onCopy={handleCopy} onSave={handleSaveTicket} />) : <p className="text-sm text-muted-foreground">尚未生成号码。</p>}
               </CardContent>
             </Card>
-          </div>
-        </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <Card>
-            <CardHeader>
-              <CardTitle>历史开奖名单</CardTitle>
-              <CardDescription>{getHistorySummary(historyDataset)} {getRecommendationSummary(recommendationDataset)}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Input placeholder="按期号、日期或号码搜索" value={search} onChange={(event) => setSearch(event.target.value)} />
-              {historyDataset.syncError ? (
-                <Alert variant="destructive">
-                  <AlertTitle>同步异常</AlertTitle>
-                  <AlertDescription>{historyDataset.syncError}</AlertDescription>
-                </Alert>
-              ) : null}
-              <HistoryTable rows={filteredHistory.slice(0, 120)} />
-            </CardContent>
-          </Card>
-
-          <div className="space-y-6">
             <Card>
               <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
                 <div>
                   <CardTitle>玩法与金额规则</CardTitle>
-                  <CardDescription>页面实现遵循大乐透基础规则与金额上限。</CardDescription>
+                  <CardDescription>保留大乐透基础玩法说明和金额计算规则。</CardDescription>
                 </div>
-                <Badge variant="outline">静态说明</Badge>
+                <Badge variant="outline">规则</Badge>
               </CardHeader>
               <CardContent>
                 <RuleAccordion />
@@ -257,7 +170,7 @@ function App() {
               <DialogContent className="max-h-[80vh] overflow-auto">
                 <DialogHeader>
                   <DialogTitle>本地保存记录</DialogTitle>
-                  <DialogDescription>保存在当前浏览器的最近 20 条选号记录。</DialogDescription>
+                  <DialogDescription>仅保存在当前浏览器的最近 20 条机选结果。</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-3">
                   {savedHistory.length ? (

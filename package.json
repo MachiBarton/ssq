@@ -5,9 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "sync:data": "python3 scripts/generate_lotto_data.py",
-    "sync:data:py": "python3 scripts/generate_lotto_data.py",
-    "sync:data:node": "node scripts/sync-data.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

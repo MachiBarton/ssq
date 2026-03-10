@@ -8,7 +8,7 @@ export const FRONT_NUMBERS = Array.from({ length: FRONT_MAX }, (_, index) => ind
 export const BACK_NUMBERS = Array.from({ length: BACK_MAX }, (_, index) => index + 1)
 
 export const DEFAULT_SELECTION: SelectionState = {
-  mode: "single",
+  mode: "smart",
   front: [],
   back: [],
   frontDan: [],
