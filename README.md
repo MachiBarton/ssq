@@ -20,11 +20,13 @@ npm run dev
 
 ## 构建
 
-先正常打包一次前端：
+前端只在本地打包：
 
 ```bash
 npm run build
 ```
+
+打包完成后，提交仓库中的 `dist`。GitHub Actions 不再执行构建，只负责把仓库里已有的 `dist` 发布到 `gh-pages`。
 
 之后定时只运行 Python 脚本，直接覆盖打包产物里的数据文件：
 
@@ -48,9 +50,8 @@ python3 scripts/generate_lotto_data.py
 
 推送到 `main` 后会自动：
 
-1. 安装依赖
-2. 执行 `npm run build`
-3. 将 `dist` 发布到 `gh-pages` 分支
+1. 读取仓库中已提交的 `dist`
+2. 将 `dist` 发布到 `gh-pages` 分支
 
 GitHub 仓库地址是 `MachiBarton/ssq`，对应 Pages 路径为 `/ssq`。
 
