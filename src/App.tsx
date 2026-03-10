@@ -85,61 +85,48 @@ function App() {
 
   return (
     <main className="min-h-screen px-4 py-6 md:px-8 md:py-8">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <Card className="overflow-hidden border-border/60 bg-card/95">
-          <CardContent className="px-6 py-8 md:px-8">
-            <h1 className="text-3xl font-semibold tracking-tight md:text-5xl">大乐透选号工具</h1>
-          </CardContent>
-        </Card>
+      <div className="mx-auto max-w-7xl space-y-5">
+        <section className="rounded-[1.4rem] border border-border/70 bg-card/95 px-6 py-6 soft-shadow md:px-8">
+          <h1 className="text-3xl font-semibold tracking-tight md:text-5xl">大乐透选号工具</h1>
+          <p className="mt-2 text-sm text-muted-foreground">默认高级机选。左侧配置选号，右侧查看结果。</p>
+        </section>
 
-        <div className="grid items-stretch gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-          <SelectionPanel
-            state={selection}
-            validation={validation}
-            onModeChange={(mode) => setSelection((current) => ({ ...current, mode }))}
-            onToggleNumber={handleToggleNumber}
-            onAdditionalChange={(value) => setSelection((current) => ({ ...current, additional: value }))}
-            onMultiplierChange={(value) => setSelection((current) => ({ ...current, multiplier: Number.isFinite(value) ? value : 1 }))}
-            onQuickPickCountChange={(value) => setSelection((current) => ({ ...current, quickPickCount: Number.isFinite(value) ? value : 1 }))}
-            onGenerate={handleGenerate}
-            latestTickets={tickets}
-          />
+        <div className="grid gap-5 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <SelectionPanel
+              state={selection}
+              validation={validation}
+              onModeChange={(mode) => setSelection((current) => ({ ...current, mode }))}
+              onToggleNumber={handleToggleNumber}
+              onAdditionalChange={(value) => setSelection((current) => ({ ...current, additional: value }))}
+              onMultiplierChange={(value) => setSelection((current) => ({ ...current, multiplier: Number.isFinite(value) ? value : 1 }))}
+              onQuickPickCountChange={(value) => setSelection((current) => ({ ...current, quickPickCount: Number.isFinite(value) ? value : 1 }))}
+              onGenerate={handleGenerate}
+              latestTickets={tickets}
+            />
+          </div>
 
-          <Card className="flex h-full min-h-0 flex-col xl:max-h-[calc(100vh-11rem)]">
-            <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
-              <div>
-                <CardTitle>本次选号结果</CardTitle>
-                <CardDescription>结果过多时在卡片内部滚动，不再撑开页面。</CardDescription>
-              </div>
-              <Button variant="outline" size="sm" onClick={() => setTickets([])}>
-                <RefreshCw className="h-4 w-4" />
-                清空
-              </Button>
-            </CardHeader>
-            <CardContent className="min-h-0 flex-1">
-              <ScrollArea className="h-full pr-3 xl:max-h-[calc(100vh-18rem)]">
-                <div className="space-y-3">
-                  {tickets.length ? tickets.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} onCopy={handleCopy} onSave={handleSaveTicket} />) : <p className="text-sm text-muted-foreground">尚未生成号码。</p>}
+          <div className="flex min-h-0 flex-col gap-5 lg:col-span-5">
+            <Card className="flex min-h-0 flex-1 flex-col lg:max-h-[76vh]">
+              <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
+                <div>
+                  <CardTitle>本次选号结果</CardTitle>
+                  <CardDescription>结果区固定高度，超出后在卡片内滚动。</CardDescription>
                 </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </div>
+                <Button variant="outline" size="sm" onClick={() => setTickets([])}>
+                  <RefreshCw className="h-4 w-4" />
+                  清空
+                </Button>
+              </CardHeader>
+              <CardContent className="min-h-0 flex-1">
+                <ScrollArea className="h-full pr-3">
+                  <div className="space-y-3">
+                    {tickets.length ? tickets.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} onCopy={handleCopy} onSave={handleSaveTicket} />) : <p className="text-sm text-muted-foreground">尚未生成号码。</p>}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
 
-        <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-          <Card>
-            <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
-              <div>
-                <CardTitle>玩法与金额规则</CardTitle>
-                <CardDescription>保留大乐透基础玩法说明和金额计算规则。</CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <RuleAccordion />
-            </CardContent>
-          </Card>
-
-          <div>
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="secondary" className="w-full justify-center">
@@ -175,6 +162,32 @@ function App() {
               </DialogContent>
             </Dialog>
           </div>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-12">
+          <Card className="lg:col-span-8">
+            <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
+              <div>
+                <CardTitle>玩法与金额规则</CardTitle>
+                <CardDescription>保留大乐透基础玩法说明和金额计算规则。</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <RuleAccordion />
+            </CardContent>
+          </Card>
+
+          <Card className="lg:col-span-4">
+            <CardHeader>
+              <CardTitle>使用提示</CardTitle>
+              <CardDescription>快速完成一轮机选</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm text-muted-foreground">
+              <p>1. 默认在高级机选里锁号或直接设定注数。</p>
+              <p>2. 点“生成号码”后在右侧结果区查看。</p>
+              <p>3. 结果可复制，也可存到本地记录。</p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </main>

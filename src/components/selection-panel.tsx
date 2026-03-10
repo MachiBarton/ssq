@@ -40,7 +40,7 @@ export function SelectionPanel({
   const cost = calculateCost(state, countBets(state))
 
   return (
-    <Card className="paper-grid sticky top-6">
+    <Card className="paper-grid">
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
