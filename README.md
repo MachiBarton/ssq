@@ -26,7 +26,7 @@ npm run dev
 npm run build
 ```
 
-打包完成后，提交仓库中的 `dist`。GitHub Actions 不再执行构建，只负责把仓库里已有的 `dist` 发布到 `gh-pages`。
+打包完成后，首次发布需要提交仓库中的 `dist`。GitHub Actions 不再执行构建，只负责把仓库里已有的 `dist` 发布到 `gh-pages`。
 
 之后定时只运行 Python 脚本，直接覆盖打包产物里的数据文件：
 
@@ -41,6 +41,7 @@ python3 scripts/generate_lotto_data.py
 - `src/generated/*.json`（仅保留为调试产物）
 
 这样前端打包后不需要重新执行 `npm build`，页面会在运行时读取 `data/*.json`。
+日常更新只需要提交这些数据文件，不需要重复提交整份前端源码或整份 `dist`。
 
 ## GitHub Pages 部署
 
@@ -96,6 +97,9 @@ scripts/run_daily_lotto_sync.sh
 2. 优先执行 `scripts/generate_lotto_data.py`
 3. 回退支持调用 Codex CLI prompt
 4. 不重新构建，只更新 `dist/data/*.json`
-5. 自动提交并推送数据文件；本机或服务器上的 `dist/data/*.json` 会被直接覆盖
+5. 自动提交并推送最小范围的数据文件：
+   - `public/data/*.json`
+   - `src/generated/*.json`
+   - `dist/data/*.json`
 
 你可以把它挂到 `cron` 或 `launchd`。Codex 不能替你在“Codex 云端”长期托管这项任务，但仓库已经具备可直接部署到你自己环境的定时入口。

@@ -47,13 +47,25 @@ trap 'rmdir "$LOCK_DIR" 2>/dev/null || true' EXIT
   fi
 
   echo "[$(date '+%F %T')] data generation done, start git sync"
-  git add public/data/lotto-history.json public/data/lotto-recommendation.json src/generated/lotto-history.json src/generated/lotto-recommendation.json
+  git add \
+    public/data/lotto-history.json \
+    public/data/lotto-recommendation.json \
+    src/generated/lotto-history.json \
+    src/generated/lotto-recommendation.json \
+    dist/data/lotto-history.json \
+    dist/data/lotto-recommendation.json
 
   if git diff --cached --quiet; then
     echo "[$(date '+%F %T')] no content changes, skip commit/push"
   else
     COMMIT_MSG="Auto update lotto data $(date '+%F %T')"
-    git commit -m "$COMMIT_MSG" -- public/data/lotto-history.json public/data/lotto-recommendation.json src/generated/lotto-history.json src/generated/lotto-recommendation.json
+    git commit -m "$COMMIT_MSG" -- \
+      public/data/lotto-history.json \
+      public/data/lotto-recommendation.json \
+      src/generated/lotto-history.json \
+      src/generated/lotto-recommendation.json \
+      dist/data/lotto-history.json \
+      dist/data/lotto-recommendation.json
     git push origin "$GIT_BRANCH"
     echo "[$(date '+%F %T')] git sync done on branch $GIT_BRANCH"
   fi
