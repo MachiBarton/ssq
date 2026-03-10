@@ -50,9 +50,15 @@ python3 scripts/generate_lotto_data.py
 
 1. 安装依赖
 2. 执行 `npm run build`
-3. 将 `dist` 发布到 GitHub Pages
+3. 将 `dist` 发布到 `gh-pages` 分支
 
 GitHub 仓库地址是 `MachiBarton/ssq`，对应 Pages 路径为 `/ssq`。
+
+GitHub 仓库设置里请将 Pages Source 设为：
+
+- `Deploy from a branch`
+- Branch: `gh-pages`
+- Folder: `/ (root)`
 
 如果你仍要保留旧的 Node 版本同步脚本用于调试：
 
